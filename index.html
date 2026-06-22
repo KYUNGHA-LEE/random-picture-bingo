@@ -11,38 +11,40 @@
   html, body { height: 100%; }
   body {
     font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #d6f0d6 0%, #c0ebe6 50%, #f1f3c8 100%);
+    background-attachment: fixed;
     min-height: 100vh;
-    color: #2d3748;
+    color: #44524a;
     padding: 16px;
     overflow-x: hidden;
   }
   .container { max-width: 1100px; margin: 0 auto; }
 
-  .header { text-align: center; color: white; margin-bottom: 24px; }
-  .header h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 900; }
-  .header p { opacity: 0.9; margin-top: 6px; font-size: 14px; }
+  .header { text-align: center; color: #3f8c54; margin-bottom: 24px; }
+  .header h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 900; text-shadow: 0 2px 0 rgba(255,255,255,0.7); letter-spacing: 0.5px; }
+  .header p { color: #6f9a7e; margin-top: 6px; font-size: 15px; }
 
   .card {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
     padding: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    box-shadow: 0 12px 34px rgba(120,170,130,0.28);
+    border: 2px solid #ffffff;
     margin-bottom: 16px;
   }
 
   .btn {
     border: none;
-    padding: 12px 22px;
-    border-radius: 12px;
+    padding: 12px 24px;
+    border-radius: 999px;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
     font-family: inherit;
   }
-  .btn-primary { background: #667eea; color: white; }
-  .btn-primary:hover:not(:disabled) { background: #5568d3; transform: translateY(-2px); }
+  .btn-primary { background: #6cbf86; color: white; }
+  .btn-primary:hover:not(:disabled) { background: #46a05f; transform: translateY(-2px); }
   .btn-success { background: #48bb78; color: white; }
   .btn-success:hover:not(:disabled) { background: #38a169; transform: translateY(-2px); }
   .btn-danger { background: #f56565; color: white; }
@@ -59,7 +61,7 @@
     font-family: inherit;
     transition: border 0.2s;
   }
-  .input:focus { outline: none; border-color: #667eea; }
+  .input:focus { outline: none; border-color: #6cbf86; }
 
   /* Login */
   .login-box { max-width: 480px; margin: 60px auto; text-align: center; }
@@ -77,7 +79,7 @@
   }
   .role-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
   .role-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .role-btn.teacher { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .role-btn.teacher { background: linear-gradient(135deg, #6cbf86, #3f9c54); }
   .role-btn.student { background: linear-gradient(135deg, #48bb78, #38a169); margin-top: 12px; width: 100%; }
 
   /* Teacher */
@@ -92,7 +94,7 @@
     font-family: inherit;
     font-size: 15px;
   }
-  .size-btn.active { background: #667eea; color: white; border-color: #667eea; }
+  .size-btn.active { background: #6cbf86; color: white; border-color: #6cbf86; }
 
   .goal-chip {
     padding: 6px 14px;
@@ -124,7 +126,7 @@
     position: relative;
     background: white;
   }
-  .image-item:hover { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(102,126,234,0.2); }
+  .image-item:hover { border-color: #6cbf86; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(108,191,134,0.2); }
   .image-item.called { border-color: #48bb78; background: #f0fff4; }
   .image-item.called::before {
     content: '✓ 출제됨';
@@ -219,7 +221,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .bingo-cell:hover:not(.marked) { background: #f7fafc; border-color: #667eea; }
+  .bingo-cell:hover:not(.marked) { background: #f7fafc; border-color: #6cbf86; }
   .bingo-cell.marked {
     background: linear-gradient(135deg, #48bb78, #38a169);
     color: white;
@@ -301,7 +303,7 @@
   .winner-overlay {
     position: fixed;
     inset: 0;
-    background: linear-gradient(135deg, rgba(102,126,234,0.97), rgba(118,75,162,0.97));
+    background: linear-gradient(135deg, rgba(108,191,134,0.97), rgba(63,156,84,0.97));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -398,7 +400,7 @@
     border-radius: 100px;
     font-size: 12px;
     font-weight: 700;
-    background: #667eea;
+    background: #6cbf86;
     color: white;
     margin-left: 6px;
   }
@@ -543,7 +545,7 @@
     <div class="emoji">🎉</div>
     <h1>BINGO!</h1>
     <div class="name" id="winnerName"></div>
-    <button class="btn" style="margin-top: 32px; background: white; color: #667eea;" id="closeWinnerBtn">닫기</button>
+    <button class="btn" style="margin-top: 32px; background: white; color: #6cbf86;" id="closeWinnerBtn">닫기</button>
   </div>
 
   <div id="toast" class="toast" style="display:none"></div>
@@ -566,16 +568,20 @@
   const storage = getStorage(app);
 
   const urlParams = new URLSearchParams(location.search);
-  const isAdmin = urlParams.has('admin') || /\/admin\/?$/.test(location.pathname);
-  let roomParam = urlParams.get('room');
-  if (isAdmin && !roomParam) {
-    // 선생님이 방 없이 ?admin 으로 들어오면 고유한 방을 자동 생성 (강사끼리 안 겹치도록)
-    roomParam = 'r' + Math.random().toString(36).slice(2, 7);
-    const u = new URL(location.href);
-    u.searchParams.set('room', roomParam);
-    history.replaceState(null, '', u.pathname + u.search);
+  // 주소에 방(?room=)이 있으면 학생, 없으면 선생님
+  const roomParam = urlParams.get('room');
+  const isTeacher = !roomParam;
+  let ROOM_ID;
+  if (roomParam) {
+    ROOM_ID = roomParam;
+  } else {
+    // 선생님 — 같은 탭에서는 방을 유지(새로고침해도 같은 게임), 새 탭/새 접속이면 새 방
+    ROOM_ID = sessionStorage.getItem('myRoom');
+    if (!ROOM_ID) {
+      ROOM_ID = 'r' + Math.random().toString(36).slice(2, 7);
+      sessionStorage.setItem('myRoom', ROOM_ID);
+    }
   }
-  const ROOM_ID = roomParam || 'default';
   document.getElementById('roomIdDisplay').textContent = ROOM_ID;
   document.getElementById('shareLink').value = `${location.origin}/?room=${ROOM_ID}`;
 
@@ -679,7 +685,8 @@
     } catch (e) {}
   }
 
-  if (isAdmin) {
+  if (isTeacher) {
+    $('loginScreen').style.display = 'none';
     enterTeacher();
   }
 
@@ -1163,6 +1170,6 @@
     $('winnerOverlay').style.display = 'none';
   };
 </script>
-<div style="position:fixed; top:10px; right:14px; color:rgba(255,255,255,0.85); font-size:12px; font-weight:500; z-index:9999; pointer-events:none; text-shadow:0 1px 2px rgba(0,0,0,0.25);">Made by 이경하 선생님</div>
+<div style="position:fixed; top:10px; right:14px; color:rgba(80,125,90,0.85); font-size:12px; font-weight:400; z-index:9999; pointer-events:none;">Made by 이경하 선생님</div>
 </body>
 </html>
