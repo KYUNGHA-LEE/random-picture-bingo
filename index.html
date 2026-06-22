@@ -428,12 +428,11 @@
   <!-- 로그인 화면 -->
   <div id="loginScreen" class="card login-box">
     <h2 style="font-size: 22px; margin-bottom: 4px;">입장하기</h2>
-    <p style="color: #718096; font-size: 14px;">선생님 또는 학생으로 입장하세요</p>
+    <p style="color: #718096; font-size: 14px;">이름 또는 닉네임을 입력하고 입장하세요</p>
     <div class="role-buttons">
-      <button id="teacherBtn" class="role-btn teacher">👨‍🏫 선생님으로 입장</button>
       <div>
-        <input id="nicknameInput" class="input" placeholder="닉네임을 입력하세요 (10자 이내)" maxlength="10" />
-        <button id="studentBtn" class="role-btn student">🎒 학생으로 입장</button>
+        <input id="nicknameInput" class="input" placeholder="이름 또는 닉네임 (10자 이내)" maxlength="10" />
+        <button id="studentBtn" class="role-btn student">🎒 입장하기</button>
       </div>
     </div>
     <p style="margin-top: 20px; color: #718096; font-size: 13px;">
@@ -566,7 +565,17 @@
   const db = getDatabase(app);
   const storage = getStorage(app);
 
-  const ROOM_ID = new URLSearchParams(location.search).get('room') || 'default';
+  const urlParams = new URLSearchParams(location.search);
+  const isAdmin = urlParams.has('admin');
+  let roomParam = urlParams.get('room');
+  if (isAdmin && !roomParam) {
+    // 선생님이 방 없이 ?admin 으로 들어오면 고유한 방을 자동 생성 (강사끼리 안 겹치도록)
+    roomParam = 'r' + Math.random().toString(36).slice(2, 7);
+    const u = new URL(location.href);
+    u.searchParams.set('room', roomParam);
+    history.replaceState(null, '', u.pathname + u.search);
+  }
+  const ROOM_ID = roomParam || 'default';
   document.getElementById('roomIdDisplay').textContent = ROOM_ID;
   document.getElementById('shareLink').value = `${location.origin}${location.pathname}?room=${ROOM_ID}`;
 
@@ -653,7 +662,8 @@
   ));
 
   // ===== 로그인 =====
-  $('teacherBtn').onclick = async () => {
+  // 주소에 ?admin 이 붙으면 선생님으로 자동 입장
+  async function enterTeacher() {
     // 더블 체크: 이미 다른 사람이 선생님이면 차단
     const occSnap = await get(child(gameRef, 'teacherOnline'));
     if (occSnap.val() === true) {
@@ -662,8 +672,6 @@
     }
     role = 'teacher';
     myId = safeId();
-    $('teacherBtn').disabled = true;
-    $('teacherBtn').textContent = '✅ 로그인 됨';
 
     await update(gameRef, {
       teacherActive: true,
@@ -672,7 +680,11 @@
     });
     onDisconnect(child(gameRef, 'teacherOnline')).set(false);
     showTeacherPanel();
-  };
+  }
+
+  if (isAdmin) {
+    enterTeacher();
+  }
 
   $('studentBtn').onclick = async () => {
     const name = $('nicknameInput').value.trim();
@@ -1154,5 +1166,6 @@
     $('winnerOverlay').style.display = 'none';
   };
 </script>
+<footer style="text-align:center; color:rgba(255,255,255,0.75); font-size:13px; padding:24px 0 28px;">Made by 이경하 선생님</footer>
 </body>
 </html>
