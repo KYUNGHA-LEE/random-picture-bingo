@@ -664,22 +664,19 @@
   // ===== 로그인 =====
   // 주소에 ?admin 이 붙으면 선생님으로 자동 입장
   async function enterTeacher() {
-    // 더블 체크: 이미 다른 사람이 선생님이면 차단
-    const occSnap = await get(child(gameRef, 'teacherOnline'));
-    if (occSnap.val() === true) {
-      showToast('이미 선생님이 입장 중입니다');
-      return;
-    }
+    // 화면을 먼저 띄운다 (Firebase 응답을 기다리지 않음 → 항상 즉시 표시)
     role = 'teacher';
     myId = safeId();
-
-    await update(gameRef, {
-      teacherActive: true,
-      teacherId: myId,
-      teacherOnline: true
-    });
-    onDisconnect(child(gameRef, 'teacherOnline')).set(false);
     showTeacherPanel();
+    // 선생님 잠금 설정은 백그라운드로 (실패해도 화면은 유지)
+    try {
+      await update(gameRef, {
+        teacherActive: true,
+        teacherId: myId,
+        teacherOnline: true
+      });
+      onDisconnect(child(gameRef, 'teacherOnline')).set(false);
+    } catch (e) {}
   }
 
   if (isAdmin) {
