@@ -566,7 +566,7 @@
   const storage = getStorage(app);
 
   const urlParams = new URLSearchParams(location.search);
-  const isAdmin = urlParams.has('admin');
+  const isAdmin = urlParams.has('admin') || /\/admin\/?$/.test(location.pathname);
   let roomParam = urlParams.get('room');
   if (isAdmin && !roomParam) {
     // 선생님이 방 없이 ?admin 으로 들어오면 고유한 방을 자동 생성 (강사끼리 안 겹치도록)
@@ -577,7 +577,7 @@
   }
   const ROOM_ID = roomParam || 'default';
   document.getElementById('roomIdDisplay').textContent = ROOM_ID;
-  document.getElementById('shareLink').value = `${location.origin}${location.pathname}?room=${ROOM_ID}`;
+  document.getElementById('shareLink').value = `${location.origin}/?room=${ROOM_ID}`;
 
   const gameRef = dbRef(db, `rooms/${ROOM_ID}`);
 
